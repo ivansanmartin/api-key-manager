@@ -13,4 +13,8 @@ router = APIRouter()
 async def create_api_key(api_reference: ApiReferenceModel, api_key_service: ApiKeyService = Depends(get_api_key_manager_service)):
     response = api_key_service.create_api_key(api_reference.model_dump())
     return response
+
+@router.patch("/api-key-manager", status_code=status.HTTP_200_OK)
+async def update_api_key(api_reference: ApiReferenceModel, api_key_service: ApiKeyService = Depends(get_api_key_manager_service)):
+    pass
     

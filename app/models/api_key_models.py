@@ -13,7 +13,7 @@ class ApiKeyModel(BaseModel):
 class ApiReferenceModel(BaseModel):
     name: str = Field(title='API Rest/Service Name', examples=['url-shortener', 'binary-decimal-api'],
                             min_length=5, max_length=100)
-    description: str = Field(title='API Rest/Service short description', examples=['url-shortener is a simple api for create shorts urls'],
+    description: Optional[str] = Field(title='API Rest/Service short description', examples=['url-shortener is a simple api for create shorts urls'],
                              min_length=5, max_length=400)
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow, description="Date and time of the API reference")
     updated_at: Optional[datetime] = Field(None, description="Date and time of the last update")

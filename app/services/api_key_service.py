@@ -12,6 +12,9 @@ class ApiKeyService():
             return {"ok": True, "message": "API reference created successfully."}
         except PyMongoError as e:
             return {"ok": False, "error": e}
+    
+    def update_api_key(self, api_reference: ApiReferenceModel):
+        pass
         
         
     
