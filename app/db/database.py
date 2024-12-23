@@ -9,11 +9,11 @@ class MongoDB:
             self.client.admin.command('ping')
             print(f'Successfully connected to {database_name}')
         except ConnectionFailure as e:
-            raise RuntimeError(f"Failed to connect to MongoDB: {str(e)}")
+            raise RuntimeError(f'Failed to connect to MongoDB: {str(e)}')
         except ConfigurationError as e:
-            raise RuntimeError(f"Configuration error in MongoDB: {str(e)}")
+            raise RuntimeError(f'Configuration error in MongoDB: {str(e)}')
         except PyMongoError as e:
-            raise RuntimeError(f"Unexpected MongoDB error: {str(e)}")
+            raise RuntimeError(f'Unexpected MongoDB error: {str(e)}')
         
     def get_collection(self, name: str):
         try:
@@ -21,4 +21,4 @@ class MongoDB:
                 raise ValueError(f'Collection "{name}" does not exist')
             return self.database[name]
         except PyMongoError as e:
-            raise RuntimeError(f"Error retrieving collection '{name}': {str(e)}")
+            raise RuntimeError(f'Error retrieving collection "{name}": {str(e)}')
