@@ -5,7 +5,7 @@ import uuid
 
 
 class ApiKeyModel(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()), title="Unique Key ID"),
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), title="Unique Key ID")
     name: str = Field(title='Key name', examples=['url-shortener'],
                         min_length=5, max_length=100)
     key: str = Field(title='Encrypt API Key', min_length=10, max_length=30)

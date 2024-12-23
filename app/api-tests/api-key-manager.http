@@ -5,13 +5,28 @@ Content-Type: application/json
   "name": "url-shortener",
   "description": "A simple API to shorten URLs. The service accepts URLs and generates a shorter link.",
   "created_at": "2024-12-21T12:00:00Z",
-  "updated_at": "2024-12-21T12:00:00Z"
+  "updated_at": "2024-12-21T12:00:00Z",
+  "data": [
+    {
+      "name": "test-12345567",
+      "key": "key-232-ac-1313-sd",
+      "expiration_date": "2024-12-21T12:00:00.000+00:00"
+    }
+  ]
 }
 
-PATCH http://localhost:8000/api/v1/api-key-manager/676642fafdc834a6cc6f4648
+PATCH http://localhost:8000/api/v1/api-key-manager/67699b77664bcedd497493e2
 Content-Type: application/json
 
 {
-  "name": "url-shortener-change",
-  "description": "url-shortener description updated"
+  "name": "url-shortener",
+  "description": "url-shortener"
 }
+
+# DELETE API KEY REFERENCE
+
+DELETE http://localhost:8000/api/v1/api-key-manager/67699b77664bcedd497493e2/
+
+# DELETE API KEY OF API REFERENCE
+
+DELETE http://localhost:8000/api/v1/api-key-manager/67699b77664bcedd497493e2/delete-key/59c1fba4-e77a-4ed1-a324-0d459e762903
