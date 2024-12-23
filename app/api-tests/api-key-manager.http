@@ -6,15 +6,14 @@ Content-Type: application/json
   "description": "A simple API to shorten URLs. The service accepts URLs and generates a shorter link.",
   "created_at": "2024-12-21T12:00:00Z",
   "updated_at": "2024-12-21T12:00:00Z",
-  "data": [
+  "api_keys": [
     {
-      "name": "test-12345567",
       "key": "key-232-ac-1313-sd",
       "expiration_date": "2024-12-21T12:00:00.000+00:00"
     },
     {
-    "name": "binary-decimal-api",
-    "key": "binary-decimal-api"
+      "key": "key-1231-d-1-223",
+      "expiration_date": "2024-12-21T12:00:00.000+00:00"
     }
   ]
 }
@@ -34,4 +33,5 @@ DELETE http://localhost:8000/api/v1/api-key-manager/67699b77664bcedd497493e2/
 # DELETE API KEY OF API REFERENCE
 
 
-DELETE http://localhost:8000/api/v1/api-key-manager/67699e89e02f4b3174116df8/delete-key/3e70bb78-d081-469a-9251-1af9545fab11
+DELETE http://localhost:8000/api/v1/api-key-manager/6769bba5aea685f27304e3f2/delete-key/1a33a7dd-3ca5-465b-a1ad-b75bda681cc7
+PATCH http://localhost:8000/api/v1/api-key-manager/generate-key/6769bba5aea685f27304e3f2/

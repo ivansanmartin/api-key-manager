@@ -3,6 +3,7 @@ from app.models.api_key_models import ApiReferenceModel, ApiKeyModel
 from pymongo.errors import PyMongoError
 from typing import Union
 from bson import ObjectId
+import secrets
 
 class ApiKeyService():
     def __init__(self, collection: Collection):
@@ -47,6 +48,14 @@ class ApiKeyService():
             return {'ok': True, 'message': 'API key of reference deleted successfully'}
         except PyMongoError as e:
             return {'ok': False, 'error': e}
+        
+    def generate_api_key(self, api_key_reference_id):
+        api_key = self._generate_secret_api_key('key')
+        print(api_key)
+
+
+    def _generate_secret_api_key(self, prefix, length=32):
+        return f"{prefix}_{secrets.token_urlsafe(length)}"
             
             
             
