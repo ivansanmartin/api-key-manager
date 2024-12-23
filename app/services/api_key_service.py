@@ -35,7 +35,16 @@ class ApiKeyService():
         
     def delete_api_key(self, api_key_reference_id: str, api_key_id: str) -> dict:
         try:
-            print(api_key_reference_id, api_key_id)
+            self.collection.update_one(
+                    {'_id': ObjectId(api_key_reference_id), 'data.id': api_key_id},
+                    {
+                        '$pull': {
+                            'data': { 'id': api_key_id }
+                        }
+                    }
+                )
+            
+            return {'ok': True, 'message': 'API key of reference deleted successfully'}
         except PyMongoError as e:
             return {'ok': False, 'error': e}
             

@@ -11,16 +11,20 @@ Content-Type: application/json
       "name": "test-12345567",
       "key": "key-232-ac-1313-sd",
       "expiration_date": "2024-12-21T12:00:00.000+00:00"
+    },
+    {
+    "name": "binary-decimal-api",
+    "key": "binary-decimal-api"
     }
   ]
 }
 
-PATCH http://localhost:8000/api/v1/api-key-manager/67699b77664bcedd497493e2
+PATCH http://localhost:8000/api/v1/api-key-manager/67699e89e02f4b3174116df8
 Content-Type: application/json
 
 {
-  "name": "url-shortener",
-  "description": "url-shortener"
+  "name": "binary-decimal-api",
+  "description": "binary-decimal-api"
 }
 
 # DELETE API KEY REFERENCE
@@ -29,4 +33,5 @@ DELETE http://localhost:8000/api/v1/api-key-manager/67699b77664bcedd497493e2/
 
 # DELETE API KEY OF API REFERENCE
 
-DELETE http://localhost:8000/api/v1/api-key-manager/67699b77664bcedd497493e2/delete-key/59c1fba4-e77a-4ed1-a324-0d459e762903
+
+DELETE http://localhost:8000/api/v1/api-key-manager/67699e89e02f4b3174116df8/delete-key/3e70bb78-d081-469a-9251-1af9545fab11
