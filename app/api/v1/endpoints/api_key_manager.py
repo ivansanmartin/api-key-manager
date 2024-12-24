@@ -6,10 +6,6 @@ from app.models.api_key_models import ApiReferenceModel, ApiKeyModel
 
 router = APIRouter()
 
-# @router.post('/api-key-manager', status_code=status.HTTP_200_OK)
-# async def get_api_key(api_key_service: ApiKeyService = Depends(get_api_key_manager_service)):
-#     pass
-
 @router.post('/api-key-manager', status_code=status.HTTP_201_CREATED)
 async def create_api_key_reference(api_reference: ApiReferenceModel, 
                         api_key_service: ApiKeyService = Depends(get_api_key_manager_service)):
@@ -46,7 +42,3 @@ async def delete_api_key(api_key_reference_id,
     response = api_key_service.delete_api_key(api_key_reference_id, api_key_id)
     
     return response
-        
-        
-        
-    

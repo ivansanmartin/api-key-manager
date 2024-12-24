@@ -136,11 +136,3 @@ class ApiKeyService():
 
         except PyMongoError as e:
             return {'ok': False, 'error': e}
-
-            
-            
-            
-        
-        
-        
-    
