@@ -5,17 +5,7 @@ Content-Type: application/json
   "name": "url-shortener",
   "description": "A simple API to shorten URLs. The service accepts URLs and generates a shorter link.",
   "created_at": "2024-12-21T12:00:00Z",
-  "updated_at": "2024-12-21T12:00:00Z",
-  "api_keys": [
-    {
-      "key": "key-232-ac-1313-sd",
-      "expiration_date": "2024-12-21T12:00:00.000+00:00"
-    },
-    {
-      "key": "key-1231-d-1-223",
-      "expiration_date": "2024-12-21T12:00:00.000+00:00"
-    }
-  ]
+  "updated_at": "2024-12-21T12:00:00Z"
 }
 
 PATCH http://localhost:8000/api/v1/api-key-manager/67699e89e02f4b3174116df8
@@ -33,5 +23,13 @@ DELETE http://localhost:8000/api/v1/api-key-manager/67699b77664bcedd497493e2/
 # DELETE API KEY OF API REFERENCE
 
 
-DELETE http://localhost:8000/api/v1/api-key-manager/6769bba5aea685f27304e3f2/delete-key/1a33a7dd-3ca5-465b-a1ad-b75bda681cc7
-PATCH http://localhost:8000/api/v1/api-key-manager/generate-key/6769bba5aea685f27304e3f2/
+DELETE http://localhost:8000/api/v1/api-key-manager/6769fd974c1b7de0fea15838/delete-key/51e18892-19f0-495e-a04d-bfc7aae6b293
+
+# GENERATE KEY FOR API REFERENCE
+
+PATCH http://localhost:8000/api/v1/api-key-manager/generate-key/6769fd974c1b7de0fea15838/
+Content-Type: application/json
+
+{
+  "expiration_date": "2024-12-21"
+}

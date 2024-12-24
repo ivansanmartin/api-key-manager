@@ -33,9 +33,11 @@ async def delete_api_key_reference(api_key_reference_id,
    return response
 
 @router.patch('/api-key-manager/generate-key/{api_key_reference_id}', status_code=status.HTTP_200_OK)
-async def generate_api_key(api_key_reference_id,
+async def generate_api_key(api_key: ApiKeyModel, api_key_reference_id,
                            api_key_service: ApiKeyService = Depends(get_api_key_manager_service)):
-    api_key_service.generate_api_key(api_key_reference_id)
+    response = api_key_service.generate_api_key(api_key_reference_id, api_key)
+
+    return response
 
 @router.delete('/api-key-manager/{api_key_reference_id}/delete-key/{api_key_id}', status_code=status.HTTP_200_OK)
 async def delete_api_key(api_key_reference_id, 

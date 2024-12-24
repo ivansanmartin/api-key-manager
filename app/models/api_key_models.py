@@ -6,8 +6,8 @@ import uuid
 
 class ApiKeyModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), title="Unique Key ID")
-    key: str = Field(title='Encrypt API Key', min_length=10, max_length=30)
-    expiration_date: datetime = Field(description='Expiration date for the shortened URL')
+    key: str = Field(default=None, title='Encrypt API Key', min_length=10, max_length=30)
+    expiration_date: datetime = Field(default=None, description='Expiration date for the shortened URL')
 
 
 class ApiReferenceModel(BaseModel):
@@ -17,4 +17,4 @@ class ApiReferenceModel(BaseModel):
                              min_length=5, max_length=400)
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow, description='Date and time of the API reference')
     updated_at: Optional[datetime] = Field(default=None, description='Date and time of the last update')
-    api_keys: Optional[List[ApiKeyModel]] = Field(default=None, title='List of Key info for api')
+    api_keys: Optional[List[ApiKeyModel]] = Field(default=[], title='List of Key info for api')
