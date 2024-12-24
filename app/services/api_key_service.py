@@ -1,7 +1,6 @@
 from pymongo.collection import Collection
 from app.models.api_key_models import ApiReferenceModel, ApiKeyModel
 from pymongo.errors import PyMongoError
-from typing import Union
 from bson import ObjectId
 import secrets
 import bcrypt

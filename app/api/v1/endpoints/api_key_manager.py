@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, status
-from typing import Union
 from app.services.api_key_service import ApiKeyService
 from app.core.dependencies import get_api_key_manager_service
 from app.models.api_key_models import ApiReferenceModel, ApiKeyModel
