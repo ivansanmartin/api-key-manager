@@ -13,14 +13,20 @@ class ApiKeyService():
     def create_api_key_reference(self, api_reference: ApiReferenceModel) -> dict:
         try:
             self.collection.insert_one(api_reference)
-            return {'ok': True, 'message': 'API reference created successfully.'}
+            api_reference['_id'] = str(api_reference['_id'])
+            api_reference = {'_id': api_reference['_id'], **api_reference}
+
+            return {'ok': True, 'message': 'API reference created successfully.', 'data': api_reference}
         except PyMongoError as e:
             return {'ok': False, 'error': e}
     
     def update_api_key_reference(self, api_key_reference_id: str, api_reference_changes: ApiReferenceModel) -> dict:
         try:
-            self.collection.update_one({'_id': ObjectId(api_key_reference_id)}, {'$set': api_reference_changes})
+            response = self.collection.update_one({'_id': ObjectId(api_key_reference_id)}, {'$set': api_reference_changes})
             
+            if response.matched_count == 0:
+                return {'ok': False, 'message': 'API reference not found.'}
+
             return {'ok': True, 'message': 'API reference updated successfully.'}
             
         except PyMongoError as e:
@@ -28,8 +34,11 @@ class ApiKeyService():
         
     def delete_api_key_reference(self, api_key_reference_id: str) -> dict:
         try:
-            self.collection.delete_one({'_id': ObjectId(api_key_reference_id)})
+            response = self.collection.delete_one({'_id': ObjectId(api_key_reference_id)})
             
+            if response.deleted_count == 0:
+                return {'ok': False, 'message': 'API reference not found.'}
+
             return {'ok': True, 'message': 'API reference deleted successfully'}
         except PyMongoError as e:
             return {'ok': False, 'error': e}
@@ -38,15 +47,17 @@ class ApiKeyService():
     def delete_api_key(self, api_key_reference_id: str, api_key_id: str) -> dict:
         try:
 
-            # TODO:
+            if (not self._exist_api_reference(api_key_reference_id)):
+                return {'ok': False, 'message': 'API reference not found.'}
+            
+            if (not self._exist_api_key(api_key_reference_id, api_key_id)):
+                return {'ok': False, 'message': 'API key not found in api reference.'}
 
-            # Validate if exist api reference and api key in api reference
-
-            response = self.collection.update_one(
-                    {'_id': ObjectId(api_key_reference_id), 'data.id': api_key_id},
+            self.collection.update_one(
+                    {'_id': ObjectId(api_key_reference_id), 'api_keys.id': api_key_id},
                     {
                         '$pull': {
-                            'data': { 'id': api_key_id }
+                            'api_keys': { 'id': api_key_id }
                         }
                     }
                 )
@@ -69,18 +80,18 @@ class ApiKeyService():
             if response.matched_count == 0:
                 return {'ok': False, 'message': 'API reference not found.'}
 
-
             return {
                 'ok': True, 
                 'message': 'API key generated succesfully in api reference',
                 'data': {
+                    'id': api_key['id'],
                     'api_key': api_key_generate,
                     'expiration_date': api_key['expiration_date']
                 }
             }
+        
         except PyMongoError as e:
             return {'ok': False, 'error': e}
-
 
     def _generate_secret_api_key(self, prefix: str, length=32) -> str:
         return self._hash_api_key(f"{prefix}_{secrets.token_urlsafe(length)}"), f"{prefix}_{secrets.token_urlsafe(length)}"
@@ -93,6 +104,38 @@ class ApiKeyService():
     
     def _verify_api_key(self, api_key: str, hashed_key: str) -> bool:
         return bcrypt.checkpw(api_key.encode(), hashed_key.encode())
+    
+    def _exist_api_reference(self, api_key_reference_id):
+        try:
+            response = self.collection.find_one({'_id': ObjectId(api_key_reference_id)})
+            if response:
+                return True
+            else:
+                return False
+            
+        except PyMongoError as e:
+            return {'ok': False, 'error': e}
+
+
+
+    def _exist_api_key(self, api_key_reference_id, api_key_id):
+        try:
+            response = self.collection.find_one(
+                {
+                    '_id': ObjectId(api_key_reference_id),
+                    'api_keys': {
+                        '$elemMatch': {'id': api_key_id}
+                    }
+                }
+            )
+
+            if response:
+                return True
+            else:
+                return False
+
+        except PyMongoError as e:
+            return {'ok': False, 'error': e}
 
             
             

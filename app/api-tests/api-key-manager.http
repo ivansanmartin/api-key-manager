@@ -8,7 +8,7 @@ Content-Type: application/json
   "updated_at": "2024-12-21T12:00:00Z"
 }
 
-PATCH http://localhost:8000/api/v1/api-key-manager/67699e89e02f4b3174116df8
+PATCH http://localhost:8000/api/v1/api-key-manager/676ae8f95383537fb6cdbaed
 Content-Type: application/json
 
 {
@@ -18,18 +18,18 @@ Content-Type: application/json
 
 # DELETE API KEY REFERENCE
 
-DELETE http://localhost:8000/api/v1/api-key-manager/67699b77664bcedd497493e2/
+DELETE http://localhost:8000/api/v1/api-key-manager/676ae8f95383537fb6cdbaed/
 
-# DELETE API KEY OF API REFERENCE
-
-
-DELETE http://localhost:8000/api/v1/api-key-manager/6769fd974c1b7de0fea15838/delete-key/51e18892-19f0-495e-a04d-bfc7aae6b293
 
 # GENERATE KEY FOR API REFERENCE
 
-PATCH http://localhost:8000/api/v1/api-key-manager/generate-key/6769fd974c1b7de0fea15838/
+PATCH http://localhost:8000/api/v1/api-key-manager/generate-key/676aea29bc00226a2435371d/
 Content-Type: application/json
 
 {
   "expiration_date": "2024-12-21"
 }
+
+# DELETE API KEY OF API REFERENCE
+
+DELETE http://localhost:8000/api/v1/api-key-manager/676aea29bc00226a2435371d/delete-key/6e643e72-2f83-499a-aa20-39fd9de1ca02
