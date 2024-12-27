@@ -1,6 +1,8 @@
 from pymongo.collection import Collection
 from app.models.api_key_models import ApiReferenceModel, ApiKeyModel
 from pymongo.errors import PyMongoError
+from fastapi.responses import JSONResponse
+from fastapi import status
 from bson import ObjectId
 import secrets
 import bcrypt
@@ -24,7 +26,10 @@ class ApiKeyService():
             response = self.collection.update_one({'_id': ObjectId(api_key_reference_id)}, {'$set': api_reference_changes})
             
             if response.matched_count == 0:
-                return {'ok': False, 'message': 'API reference not found.'}
+                return JSONResponse(
+                    content={'ok': False, 'message': 'API reference not found.'},
+                    status_code=status.HTTP_404_NOT_FOUND
+                )
 
             return {'ok': True, 'message': 'API reference updated successfully.'}
             
@@ -36,7 +41,10 @@ class ApiKeyService():
             response = self.collection.delete_one({'_id': ObjectId(api_key_reference_id)})
             
             if response.deleted_count == 0:
-                return {'ok': False, 'message': 'API reference not found.'}
+                return JSONResponse(
+                    content={'ok': False, 'message': 'API reference not found.'},
+                    status_code=status.HTTP_404_NOT_FOUND
+                )
 
             return {'ok': True, 'message': 'API reference deleted successfully'}
         except PyMongoError as e:
@@ -47,10 +55,16 @@ class ApiKeyService():
         try:
 
             if (not self._exist_api_reference(api_key_reference_id)):
-                return {'ok': False, 'message': 'API reference not found.'}
+                return JSONResponse(
+                    content={'ok': False, 'message': 'API reference not found.'},
+                    status_code=status.HTTP_404_NOT_FOUND
+                )
             
             if (not self._exist_api_key(api_key_reference_id, api_key_id)):
-                return {'ok': False, 'message': 'API key not found in api reference.'}
+                return JSONResponse(
+                    content={'ok': False, 'message': 'API key not found in api reference.'},
+                    status_code=status.HTTP_404_NOT_FOUND
+                )
 
             self.collection.update_one(
                     {'_id': ObjectId(api_key_reference_id), 'api_keys.id': api_key_id},
@@ -77,11 +91,14 @@ class ApiKeyService():
             )
 
             if response.matched_count == 0:
-                return {'ok': False, 'message': 'API reference not found.'}
+                return JSONResponse(
+                    content={'ok': False, 'message': 'API reference not found.'},
+                    status_code=status.HTTP_404_NOT_FOUND
+                )
 
             return {
                 'ok': True, 
-                'message': 'API key generated succesfully in api reference',
+                'message': 'API key generated succesfully in api reference.',
                 'data': {
                     'id': api_key['id'],
                     'api_key': api_key_generate,
