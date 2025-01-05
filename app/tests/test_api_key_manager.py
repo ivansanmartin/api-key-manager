@@ -84,3 +84,17 @@ def test_delete_api_key_reference_id_not_found():
 
     assert response.status_code == 404
     assert response.json() == {'ok': False, 'message': 'API reference not found.'}
+
+def test_verify_key_of_api_reference():
+    response = client.post(
+        '/api/v1/api-key-manager/verify-key',
+        json={
+            "api_name_reference": "url-shortener",
+            "api_key": "key_bzxinx8XqNaDZCGphGT3HkA5UrIBlRViS06pbGUc-kc"
+        }
+
+        )
+    
+    assert response.status_code == 200, f"The status code is wrong, the expected is '200', the response is '{response.status_code}'"
+    assert response.json()['ok'] == True
+    assert response.json()['message'] == 'API Key is correct and verified.'

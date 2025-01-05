@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from app.services.api_key_service import ApiKeyService
 from app.core.dependencies import get_api_key_manager_service
-from app.models.api_key_models import ApiReferenceModel, ApiKeyModel
+from app.models.api_key_models import ApiReferenceModel, ApiKeyModel, VerifyKeyModel
 
 router = APIRouter()
 
@@ -41,3 +41,11 @@ async def delete_api_key(api_key_reference_id,
     response = api_key_service.delete_api_key(api_key_reference_id, api_key_id)
     
     return response
+
+@router.post('/api-key-manager/verify-key', status_code=status.HTTP_200_OK)
+async def verify_api_key(api_key: VerifyKeyModel,
+                         api_key_service: ApiKeyService = Depends(get_api_key_manager_service)):
+    response = api_key_service.verify_api_key(api_key)
+    
+    return response
+    

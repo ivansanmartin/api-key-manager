@@ -1,4 +1,6 @@
 from pymongo import MongoClient
+from redis import StrictRedis
+from redis.exceptions import AuthenticationError
 from pymongo.errors import ConnectionFailure, ConfigurationError, PyMongoError
 
 class MongoDB:
@@ -7,7 +9,7 @@ class MongoDB:
             self.client = MongoClient(uri, serverSelectionTimeoutMS=5000)
             self.database = self.client[database_name]
             self.client.admin.command('ping')
-            print(f'Successfully connected to {database_name}')
+            print(f'Successfully connected to MongoDB: {database_name}')
         except ConnectionFailure as e:
             raise RuntimeError(f'Failed to connect to MongoDB: {str(e)}')
         except ConfigurationError as e:
@@ -22,3 +24,17 @@ class MongoDB:
             return self.database[name]
         except PyMongoError as e:
             raise RuntimeError(f'Error retrieving collection "{name}": {str(e)}')
+        
+class Redis:
+    def __init__(self, redis_url: str):
+        try:
+            self.redis = StrictRedis.from_url(redis_url)
+            self.test_connection_response = self.redis.ping()
+            
+            if self.test_connection_response:
+                print(f'Successfully connected to Redis')
+        except AuthenticationError as e:
+            raise RuntimeError(f'Failted to connect to Redis: {str(e)}')
+        
+    def get_redis(self):
+        return self.redis

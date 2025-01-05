@@ -23,7 +23,7 @@ DELETE http://localhost:8000/api/v1/api-key-manager/676ae8f95383537fb6cdbaed/
 
 # GENERATE KEY FOR API REFERENCE
 
-PATCH http://localhost:8000/api/v1/api-key-manager/generate-key/676aea29bc00226a2435371d/
+PATCH http://localhost:8000/api/v1/api-key-manager/generate-key/676e0274bfacb02b8c4e3545/
 Content-Type: application/json
 
 {
@@ -33,3 +33,13 @@ Content-Type: application/json
 # DELETE API KEY OF API REFERENCE
 
 DELETE http://localhost:8000/api/v1/api-key-manager/676aea29bc00226a2435371d/delete-key/6e643e72-2f83-499a-aa20-39fd9de1ca02
+
+# VERIFY API KEY
+
+POST http://localhost:8000/api/v1/api-key-manager/verify-key
+Content-Type: application/json
+
+{
+  "api_name_reference": "url-shortener",
+  "api_key": "key_bzxinx8XqNaDZCGphGT3HkA5UrIBlRViS06pbGUc-kc"
+}

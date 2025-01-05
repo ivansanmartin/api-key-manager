@@ -1,5 +1,6 @@
 from pymongo.collection import Collection
-from app.models.api_key_models import ApiReferenceModel, ApiKeyModel
+from redis import Redis
+from app.models.api_key_models import ApiReferenceModel, ApiKeyModel, VerifyKeyModel
 from pymongo.errors import PyMongoError
 from fastapi.responses import JSONResponse
 from fastapi import status
@@ -8,8 +9,9 @@ import secrets
 import bcrypt
 
 class ApiKeyService():
-    def __init__(self, collection: Collection):
+    def __init__(self, collection: Collection, redis: Redis):
         self.collection = collection
+        self.redis = redis
         
     def create_api_key_reference(self, api_reference: ApiReferenceModel) -> dict:
         try:
@@ -24,7 +26,7 @@ class ApiKeyService():
     def update_api_key_reference(self, api_key_reference_id: str, api_reference_changes: ApiReferenceModel) -> dict:
         try:
             response = self.collection.update_one({'_id': ObjectId(api_key_reference_id)}, {'$set': api_reference_changes})
-            
+    
             if response.matched_count == 0:
                 return JSONResponse(
                     content={'ok': False, 'message': 'API reference not found.'},
@@ -108,9 +110,40 @@ class ApiKeyService():
         
         except PyMongoError as e:
             return {'ok': False, 'error': e}
+        
+    def verify_api_key(self, api_key: VerifyKeyModel):
+        try:
+            api_data_request = api_key.model_dump()
+            [api_name_reference, key] = api_data_request.get('api_name_reference'), api_data_request.get('api_key')
+            
+            api_reference = self._get_api_key(api_name_reference, key)
+            
+            
+            if not api_reference:
+                return JSONResponse(
+                    content={'ok': False, 'message': 'API Key is expire or doesnt exist.'},
+                    status_code=status.HTTP_404_NOT_FOUND
+                )
+                
+            return JSONResponse(
+                content={
+                    'ok': True,
+                    'message': 'API Key is correct and verified.',
+                    'api_reference': {
+                        'name': api_reference.get('name'),
+                        'description': api_reference.get('description')
+                    }
+                }
+            )
+            
+        except PyMongoError as e:
+            return {'ok': False, 'error': e}
 
+
+            
     def _generate_secret_api_key(self, prefix: str, length=32) -> str:
-        return self._hash_api_key(f"{prefix}_{secrets.token_urlsafe(length)}"), f"{prefix}_{secrets.token_urlsafe(length)}"
+        api_key_raw = f"{prefix}_{secrets.token_urlsafe(length)}"
+        return self._hash_api_key(api_key_raw), api_key_raw
     
     def _hash_api_key(self, api_key: str):
         salt = bcrypt.gensalt()
@@ -118,6 +151,17 @@ class ApiKeyService():
         
         return hashed_key.decode()
     
+    def _get_api_key(self, api_name_reference: str, api_key: str):
+        response = self.collection.find_one({'name': api_name_reference})
+        is_valid = any(
+            self._verify_api_key(api_key, key['key']) for key in response.get('api_keys', [])
+        )
+        
+        if response and is_valid:
+            return response
+        else:
+            return False
+        
     def _verify_api_key(self, api_key: str, hashed_key: str) -> bool:
         return bcrypt.checkpw(api_key.encode(), hashed_key.encode())
     

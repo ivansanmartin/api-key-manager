@@ -12,4 +12,10 @@ env = {
         "database": os.getenv('MONGODB_DATABASE'),
         "collection": os.getenv('MONGODB_COLLECTION'),
     },
+    "redis": {
+        'host': os.getenv('REDIS_HOST'),
+        'port': os.getenv('REDIS_PORT'),
+        'username': os.getenv('REDIS_USERNAME'),
+        'password': os.getenv('REDIS_PASSWORD'),
+    }
 }
