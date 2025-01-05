@@ -118,7 +118,6 @@ class ApiKeyService():
             
             api_reference = self._get_api_key(api_name_reference, key)
             
-            
             if not api_reference:
                 return JSONResponse(
                     content={'ok': False, 'message': 'API Key is expire or doesnt exist.'},
@@ -139,8 +138,6 @@ class ApiKeyService():
         except PyMongoError as e:
             return {'ok': False, 'error': e}
 
-
-            
     def _generate_secret_api_key(self, prefix: str, length=32) -> str:
         api_key_raw = f"{prefix}_{secrets.token_urlsafe(length)}"
         return self._hash_api_key(api_key_raw), api_key_raw
@@ -175,8 +172,6 @@ class ApiKeyService():
             
         except PyMongoError as e:
             return {'ok': False, 'error': e}
-
-
 
     def _exist_api_key(self, api_key_reference_id, api_key_id):
         try:

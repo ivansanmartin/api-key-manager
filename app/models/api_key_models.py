@@ -9,7 +9,6 @@ class ApiKeyModel(BaseModel):
     key: str = Field(default=None, title='Encrypt API Key', min_length=10, max_length=50)
     expiration_date: datetime = Field(default=None, description='Expiration date for the shortened URL')
 
-
 class ApiReferenceModel(BaseModel):
     name: str = Field(title='API Rest/Service Name', examples=['url-shortener', 'binary-decimal-api'],
                             min_length=5, max_length=100)
