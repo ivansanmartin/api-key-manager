@@ -7,6 +7,8 @@ from fastapi import status
 from bson import ObjectId
 import secrets
 import bcrypt
+from bson import json_util
+import json
 
 class ApiKeyService():
     def __init__(self, collection: Collection, redis: Redis):
@@ -116,7 +118,7 @@ class ApiKeyService():
             api_data_request = api_key.model_dump()
             [api_name_reference, key] = api_data_request.get('api_name_reference'), api_data_request.get('api_key')
             
-            api_reference = self._get_api_key(api_name_reference, key)
+            api_reference, api_key_id = self._get_api_key(api_name_reference, key)
             
             if not api_reference:
                 return JSONResponse(
@@ -124,15 +126,26 @@ class ApiKeyService():
                     status_code=status.HTTP_404_NOT_FOUND
                 )
                 
-            return JSONResponse(
-                content={
+            # TODO
+            # Getting api key with id and use redis cache
+                
+            content_response = {
                     'ok': True,
+                    'api_key_id': api_key_id,
                     'message': 'API Key is correct and verified.',
                     'api_reference': {
                         'name': api_reference.get('name'),
                         'description': api_reference.get('description')
                     }
                 }
+                
+            if not self.redis.json().get('caching', '$'):
+                self.redis.json().set('caching', '$', [content_response])
+            else:
+                self.redis.json().arrappend('caching', '$', content_response)
+                
+            return JSONResponse(
+                content=content_response
             )
             
         except PyMongoError as e:
@@ -154,10 +167,20 @@ class ApiKeyService():
             self._verify_api_key(api_key, key['key']) for key in response.get('api_keys', [])
         )
         
+        api_key_id = self._get_api_key_id(response, api_key)
+        
         if response and is_valid:
-            return response
+            return response, api_key_id
         else:
             return False
+        
+    def _get_api_key_id(self, response, api_key):
+        api_key_id = next(
+            (key['id'] for key in response.get('api_keys', []) if self._verify_api_key(api_key, key['key'])),
+            None
+        )
+        
+        return api_key_id
         
     def _verify_api_key(self, api_key: str, hashed_key: str) -> bool:
         return bcrypt.checkpw(api_key.encode(), hashed_key.encode())
