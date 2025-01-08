@@ -99,11 +99,12 @@ class ApiKeyService():
                     content={'ok': False, 'message': 'API reference not found.'},
                     status_code=status.HTTP_404_NOT_FOUND
                 )
-
+                
             return {
                 'ok': True, 
+                'api_reference_id': api_key_reference_id,
                 'message': 'API key generated succesfully in api reference.',
-                'data': {
+                'data_key': {
                     'id': api_key['id'],
                     'api_key': api_key_generate,
                     'expiration_date': api_key['expiration_date']
@@ -115,35 +116,36 @@ class ApiKeyService():
         
     def verify_api_key(self, api_key: VerifyKeyModel):
         try:
+                
             api_data_request = api_key.model_dump()
-            [api_name_reference, key] = api_data_request.get('api_name_reference'), api_data_request.get('api_key')
+            api_key_id = api_data_request.get('api_key_id')
             
-            api_reference, api_key_id = self._get_api_key(api_name_reference, key)
-            
+            api_key_caching = self.redis.json().get(f'api_key_id:{api_key_id}', '$')
+            if api_key_caching:
+                return JSONResponse(
+                    content=api_key_caching
+                )
+                
+            [api_reference_id, api_key_id, key] = api_data_request.get('api_reference_id'), api_data_request.get('api_key_id'), api_data_request.get('api_key')
+            api_reference = self._get_api_key(api_reference_id, api_key_id, key)
             if not api_reference:
                 return JSONResponse(
                     content={'ok': False, 'message': 'API Key is expire or doesnt exist.'},
                     status_code=status.HTTP_404_NOT_FOUND
                 )
                 
-            # TODO
-            # Getting api key with id and use redis cache
-                
             content_response = {
                     'ok': True,
-                    'api_key_id': api_key_id,
                     'message': 'API Key is correct and verified.',
                     'api_reference': {
                         'name': api_reference.get('name'),
                         'description': api_reference.get('description')
                     }
-                }
+                }                
                 
-            if not self.redis.json().get('caching', '$'):
-                self.redis.json().set('caching', '$', [content_response])
-            else:
-                self.redis.json().arrappend('caching', '$', content_response)
-                
+            self.redis.json().set(f'api_key_id:{api_key_id}', '$', content_response)
+            self.redis.expire(f'api_key_id:{api_key_id}', 3600)
+
             return JSONResponse(
                 content=content_response
             )
@@ -161,26 +163,25 @@ class ApiKeyService():
         
         return hashed_key.decode()
     
-    def _get_api_key(self, api_name_reference: str, api_key: str):
-        response = self.collection.find_one({'name': api_name_reference})
-        is_valid = any(
-            self._verify_api_key(api_key, key['key']) for key in response.get('api_keys', [])
+    def _get_api_key(self, api_reference_id: str, api_key_id: str, api_key: str):
+        response = self.collection.find_one(
+            {'_id': ObjectId(api_reference_id), 'api_keys.id': api_key_id},
+            {
+                'api_keys': {'$elemMatch': {'id': api_key_id}},
+                'name': 1,
+                'description': 1
+            }
         )
         
-        api_key_id = self._get_api_key_id(response, api_key)
+        api_key_encrypted = response.get('api_keys')[0].get('key')
+        
+        is_valid = self._verify_api_key(api_key, api_key_encrypted)
         
         if response and is_valid:
-            return response, api_key_id
+            return response
         else:
             return False
         
-    def _get_api_key_id(self, response, api_key):
-        api_key_id = next(
-            (key['id'] for key in response.get('api_keys', []) if self._verify_api_key(api_key, key['key'])),
-            None
-        )
-        
-        return api_key_id
         
     def _verify_api_key(self, api_key: str, hashed_key: str) -> bool:
         return bcrypt.checkpw(api_key.encode(), hashed_key.encode())
