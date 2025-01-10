@@ -2,7 +2,7 @@ POST http://localhost:8000/api/v1/api-key-manager
 Content-Type: application/json
 
 {
-  "name": "url-shortener",
+  "name": "url-shortener-test",
   "description": "A simple API to shorten URLs. The service accepts URLs and generates a shorter link.",
   "created_at": "2024-12-21T12:00:00Z",
   "updated_at": "2024-12-21T12:00:00Z"
