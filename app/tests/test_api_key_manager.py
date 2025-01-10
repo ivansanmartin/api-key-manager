@@ -89,8 +89,9 @@ def test_verify_key_of_api_reference():
     response = client.post(
         '/api/v1/api-key-manager/verify-key',
         json={
-            "api_name_reference": "url-shortener",
-            "api_key": "key_bzxinx8XqNaDZCGphGT3HkA5UrIBlRViS06pbGUc-kc"
+            "api_reference_id": "676e0274bfacb02b8c4e3545",
+            "api_key_id": "cebb17b8-532b-4c88-8c66-bd072cb20a8c",
+            "api_key": "key_GkNEykN12pmaYP9GWH7jD8mb4e3yXOEr7fJbp5QcikU"
         }
 
         )

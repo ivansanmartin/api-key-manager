@@ -121,9 +121,11 @@ class ApiKeyService():
             api_key_id = api_data_request.get('api_key_id')
             
             api_key_caching = self.redis.json().get(f'api_key_id:{api_key_id}', '$')
+
             if api_key_caching:
                 return JSONResponse(
-                    content=api_key_caching
+                    content=api_key_caching[0],
+                    status_code=status.HTTP_200_OK
                 )
                 
             [api_reference_id, api_key_id, key] = api_data_request.get('api_reference_id'), api_data_request.get('api_key_id'), api_data_request.get('api_key')
@@ -147,7 +149,9 @@ class ApiKeyService():
             self.redis.expire(f'api_key_id:{api_key_id}', 3600)
 
             return JSONResponse(
-                content=content_response
+                content=content_response,
+                status_code=status.HTTP_200_OK
+                
             )
             
         except PyMongoError as e:
