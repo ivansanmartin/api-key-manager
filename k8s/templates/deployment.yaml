@@ -26,3 +26,5 @@ spec:
             runAsUser: {{ .Values.securityContext.runAsUser }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          envFrom:
+            {{- toYaml .Values.secretRef | nindent 12 }}
