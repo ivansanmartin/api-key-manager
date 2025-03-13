@@ -1,0 +1,30 @@
+replicaCount: 1
+
+image:
+  repository: 192.168.1.200:30002/ivansanmartin/api-key-manager
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+nameOverride: "api-key-manager"
+fullnameOverride: "api-key-manager"
+
+namespace: ivansanmartin
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 64Mi
+  requests:
+    cpu: 100m
+    memory: 32Mi
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+securityContext:
+  runAsUser: 0
+
+labels:
+  app: api-key-manager

@@ -1,0 +1,7 @@
+{{ .Chart.Name }}!
+
+Details:
+- Name: {{ .Values.fullnameOverride }}
+- Namespace: {{ .Values.namespace }}
+- Replicas: {{ .Values.replicaCount }}
+- Image: {{ .Values.image.repository }}:{{ .Values.image.tag }}

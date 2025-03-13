@@ -1,0 +1,6 @@
+apiVersion: v2
+name: api-key-manager
+description: A Helm chart for api-key-manager
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
