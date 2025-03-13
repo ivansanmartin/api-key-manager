@@ -22,7 +22,6 @@ secretRef:
   - secretRef:
       name: api-key-manager-secret
 
-
 service:
   type: ClusterIP
   port: 80
