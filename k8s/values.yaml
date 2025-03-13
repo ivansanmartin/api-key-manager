@@ -19,7 +19,9 @@ resources:
     memory: 32Mi
 
 secretRef:
-  name: api-key-manager-secret
+  - secretRef:
+      name: api-key-manager-secret
+
 
 service:
   type: ClusterIP
