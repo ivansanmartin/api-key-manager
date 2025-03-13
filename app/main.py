@@ -7,4 +7,4 @@ app.include_router(api_key_router, prefix="/api/v1")
 
 @app.get("/")
 async def main():
-    return {"ok": True, "name": "API Key Manager", "descripcion": "API Key generator and administrator", "author": "Iván San Martín"}
+    return {"ok": True, "name": "api-key-manager", "descripcion": "API Key generator and administrator", "author": "Iván San Martín"}
