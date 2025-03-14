@@ -2,7 +2,7 @@ POST http://localhost:8000/api/v1/api-key-manager
 Content-Type: application/json
 
 {
-  "name": "url-shortener",
+  "name": "url-shortenetestr3",
   "description": "A simple API to shorten URLs. The service accepts URLs and generates a shorter link.",
   "created_at": "2024-12-21T12:00:00Z",
   "updated_at": "2024-12-21T12:00:00Z"
@@ -23,7 +23,7 @@ DELETE http://localhost:8000/api/v1/api-key-manager/676ae8f95383537fb6cdbaed/
 
 # GENERATE KEY FOR API REFERENCE
 
-PATCH http://localhost:8000/api/v1/api-key-manager/generate-key/67d38a98c029e88c2f5ab918/
+PATCH http://localhost:8000/api/v1/api-key-manager/generate-key/67d490ca5b596052f8fbb437/
 Content-Type: application/json
 
 {
@@ -40,5 +40,6 @@ POST http://localhost:8000/api/v1/api-key-manager/verify-key
 Content-Type: application/json
 
 {
-  "api_key": "key_d"
+  "api_reference_id": "67d490ca5b596052f8fbb437",
+  "api_key": "key_iskVa1feL6ROT3QGXkE4XtWCBB-fsg7tTpPcvt-DfCE"
 }

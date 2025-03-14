@@ -117,6 +117,7 @@ class ApiKeyService():
         try:
             api_data_request = api_key.model_dump()
             api_key_value = api_data_request.get('api_key')
+            api_reference_id = api_data_request.get('api_reference_id')
             
             api_key_caching = self.redis.json().get(f'api_key:{api_key_value}', '$')
             
@@ -126,7 +127,7 @@ class ApiKeyService():
                     status_code=status.HTTP_200_OK
                 )
             
-            api_reference = self._find_api_key_by_value(api_key_value)
+            api_reference = self._find_api_key_reference(api_key_value, api_reference_id)
             
             if not api_reference:
                 return JSONResponse(
@@ -164,25 +165,6 @@ class ApiKeyService():
         
         return hashed_key.decode()
     
-    def _get_api_key(self, api_reference_id: str, api_key_id: str, api_key: str):
-        response = self.collection.find_one(
-            {'_id': ObjectId(api_reference_id), 'api_keys.id': api_key_id},
-            {
-                'api_keys': {'$elemMatch': {'id': api_key_id}},
-                'name': 1,
-                'description': 1
-            }
-        )
-        
-        api_key_encrypted = response.get('api_keys')[0].get('key')
-        
-        is_valid = self._verify_api_key(api_key, api_key_encrypted)
-        
-        if response and is_valid:
-            return response
-        else:
-            return False
-        
         
     def _verify_api_key(self, api_key: str, hashed_key: str) -> bool:
         return bcrypt.checkpw(api_key.encode(), hashed_key.encode())
@@ -198,10 +180,10 @@ class ApiKeyService():
         except PyMongoError as e:
             return {'ok': False, 'error': e}
 
-    def _find_api_key_by_value(self, api_key: str):
-        all_references = self.collection.find({})
-        
-        for reference in all_references:
+    def _find_api_key_reference(self, api_key: str, api_reference_id):
+        reference_api = self.collection.find({'_id': ObjectId(api_reference_id)})
+        print(reference_api)        
+        for reference in reference_api:
             if 'api_keys' in reference and reference['api_keys']:
                 for key_entry in reference['api_keys']:
                     api_key_encrypted = key_entry.get('key')

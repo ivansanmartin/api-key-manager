@@ -19,4 +19,5 @@ class ApiReferenceModel(BaseModel):
     api_keys: Optional[List[ApiKeyModel]] = Field(default=[], title='List of Key info for api')
 
 class VerifyKeyModel(BaseModel):
+    api_reference_id: str = Field(default_factory=lambda: str(uuid.uuid4()), title="Unique Key ID of API reference")
     api_key: str = Field(default=None, title='API Key', min_length=10, max_length=50)
