@@ -40,5 +40,5 @@ POST http://localhost:8000/api/v1/api-key-manager/verify-key
 Content-Type: application/json
 
 {
-  "api_key": "key_dL9sULwpqU0dUwFYcWYYjTKBEHycTxH2JfM8pzhbEX4"
+  "api_key": "key_d"
 }

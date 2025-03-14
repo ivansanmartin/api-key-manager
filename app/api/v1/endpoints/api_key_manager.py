@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Request
+from fastapi.responses import JSONResponse
 from app.services.api_key_service import ApiKeyService
 from app.core.dependencies import get_api_key_manager_service
 from app.models.api_key_models import ApiReferenceModel, ApiKeyModel, VerifyKeyModel
+from pydantic import ValidationError
 
 router = APIRouter()
 
@@ -43,9 +45,20 @@ async def delete_api_key(api_key_reference_id,
     return response
 
 @router.post('/api-key-manager/verify-key', status_code=status.HTTP_200_OK)
-async def verify_api_key(api_key: VerifyKeyModel,
+async def verify_api_key(request: Request,
                          api_key_service: ApiKeyService = Depends(get_api_key_manager_service)):
-    response = api_key_service.verify_api_key(api_key)
+    body = await request.json()
     
-    return response
+    try:
+        api_key = VerifyKeyModel(**body)
+        response = api_key_service.verify_api_key(api_key)
+        return response
+    except ValidationError:
+        return JSONResponse(
+            content={
+                "ok": False,
+                "message": "The api key is not valid."
+                },
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY
+        )
     

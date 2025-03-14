@@ -7,8 +7,6 @@ from fastapi import status
 from bson import ObjectId
 import secrets
 import bcrypt
-from bson import json_util
-import json
 
 class ApiKeyService():
     def __init__(self, collection: Collection, redis: Redis):
