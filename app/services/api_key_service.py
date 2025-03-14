@@ -87,6 +87,7 @@ class ApiKeyService():
         try:
             api_key_generate_hashed, api_key_generate = self._generate_secret_api_key('key')
             api_key = api_key.model_copy(update={'key': api_key_generate_hashed}).model_dump()
+
             response = self.collection.update_one(
                 {'_id': ObjectId(api_key_reference_id)},
                 {'$addToSet': {
@@ -116,42 +117,40 @@ class ApiKeyService():
         
     def verify_api_key(self, api_key: VerifyKeyModel):
         try:
-                
             api_data_request = api_key.model_dump()
-            api_key_id = api_data_request.get('api_key_id')
+            api_key_value = api_data_request.get('api_key')
             
-            api_key_caching = self.redis.json().get(f'api_key_id:{api_key_id}', '$')
-
+            api_key_caching = self.redis.json().get(f'api_key:{api_key_value}', '$')
+            
             if api_key_caching:
                 return JSONResponse(
                     content=api_key_caching[0],
                     status_code=status.HTTP_200_OK
                 )
-                
-            [api_reference_id, api_key_id, key] = api_data_request.get('api_reference_id'), api_data_request.get('api_key_id'), api_data_request.get('api_key')
-            api_reference = self._get_api_key(api_reference_id, api_key_id, key)
+            
+            api_reference = self._find_api_key_by_value(api_key_value)
+            
             if not api_reference:
                 return JSONResponse(
                     content={'ok': False, 'message': 'API Key is expire or doesnt exist.'},
                     status_code=status.HTTP_404_NOT_FOUND
                 )
-                
+            
             content_response = {
-                    'ok': True,
-                    'message': 'API Key is correct and verified.',
-                    'api_reference': {
-                        'name': api_reference.get('name'),
-                        'description': api_reference.get('description')
-                    }
-                }                
-                
-            self.redis.json().set(f'api_key_id:{api_key_id}', '$', content_response)
-            self.redis.expire(f'api_key_id:{api_key_id}', 3600)
-
+                'ok': True,
+                'message': 'API Key is correct and verified.',
+                'api_reference': {
+                    'name': api_reference.get('name'),
+                    'description': api_reference.get('description')
+                }
+            }
+            
+            self.redis.json().set(f'api_key:{api_key_value}', '$', content_response)
+            self.redis.expire(f'api_key:{api_key_value}', 3600)
+            
             return JSONResponse(
                 content=content_response,
                 status_code=status.HTTP_200_OK
-                
             )
             
         except PyMongoError as e:
@@ -200,6 +199,22 @@ class ApiKeyService():
             
         except PyMongoError as e:
             return {'ok': False, 'error': e}
+
+    def _find_api_key_by_value(self, api_key: str):
+        all_references = self.collection.find({})
+        
+        for reference in all_references:
+            if 'api_keys' in reference and reference['api_keys']:
+                for key_entry in reference['api_keys']:
+                    api_key_encrypted = key_entry.get('key')
+                    if self._verify_api_key(api_key, api_key_encrypted):
+                        return {
+                            'name': reference.get('name'),
+                            'description': reference.get('description'),
+                            'api_key_id': key_entry.get('id')
+                        }
+        
+        return False
 
     def _exist_api_key(self, api_key_reference_id, api_key_id):
         try:
