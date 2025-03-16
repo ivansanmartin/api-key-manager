@@ -9,6 +9,7 @@ app = FastAPI()
 
 origins = [
     "https://ivsm.link",
+    "http://url-shortener-service.ivansanmartin.svc.cluster.local"
 ]
 
 app.add_middleware(
