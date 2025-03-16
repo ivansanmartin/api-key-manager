@@ -22,6 +22,8 @@ spec:
         - name: {{ .Values.nameOverride }}
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+          - containerPort: {{ .Values.service.targetPort }}
           securityContext:
             runAsUser: {{ .Values.securityContext.runAsUser }}
           resources:
